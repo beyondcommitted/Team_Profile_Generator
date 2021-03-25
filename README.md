@@ -2,7 +2,10 @@
 
 ## Creator Story
 ```
-Using the node.js envionment questions were created to generate a document for particular employee information. This will allow the user to organze a team of employee information in and efficient and effective manor.
+Using the node.js envionment questions were created to
+generate a document for particular employee information.
+This will allow the user to organze a team of employee information
+in and efficient and effective manor.
 ```
 ---
 ## Links to Application and GitHub
