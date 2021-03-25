@@ -1,178 +1,181 @@
+// Dependencies 
 const inquirer = require("inquirer");
 const fs = require("fs");
+const jest = require("jest");
+// Module imports
+const convertToHTML = require("./convert");
+const Employee = require("./lib/employee");
+const Manager = require("./lib/manager");
+const Engineer = require("./lib/engineer");
+const Intern = require("./lib/intern");
+const generateHTML = require("./src/card-generator")
 
-const convert = require("./convert");
-const Manager = require("./manager");
-const Engineer = require("./engineer");
-const Intern = require("./intern");
-
-let teamManagerCard = "";
-let engineerCard = "";
-let internCard = "";
-let employeeCards = "";
-
-//organizing the team //
-let promptTeamManager = () => {
-  console.log("Organize your team.");
-  return inquirer
-    .prompt([
+// For user inputs
+const newTeam = [];
+// Prompt user for inputs
+function promptTeamMember() {
+  inquirer.prompt([
       {
         type: "input",
         name: "name",
-        message: "What is the managers name?",
+        message: "What is the employees name?",
+        validation: (empName) => {
+          if (empName) {
+            return true;
+          } else {
+            return "Must enter a name.";
+          }
+        }
       },
       {
         type: "input",
         name: "id",
-        message: "What is the managers id?",
+        message: "What is the employees id number?",
+        validation: (idNum) => {
+          if (idNum) {
+            return true;
+          } else {
+            return "Must enter an id number.";
+          }
+        },
       },
       {
         type: "input",
         name: "email",
-        message: "What is the managers email?",
+        message: "What is the employees e-mail?",
+        validation: (address) => {
+          if (address) {
+            return true;
+          } else {
+            return "Must enter an e-mail address.";
+          }
+        },
       },
-      {
-        type: "input",
-        name: "officeNumber",
-        message: "What is the managers office number?",
-      },
-    ]) //Initiating a new Manager object
-    .then((data) => {
-      let teamManager = new Manager(
-        data.name,
-        data.id,
-        data.email,
-        data.officeNumber
-      );
-      console.log(teamManager);
-
-      teamManagerCard = cardGenerator.managersCard(
-        teamManager.name,
-        teamManager.id,
-        teamManager.email,
-        teamManager.officeNumber
-      );
-      employeeCards += teamManagerCard;
-
-      selectEmp();
-    });
-};
-
-//prompt to choose a team member
-const selectEmp = () => {
-  inquirer
-    .prompt([
       {
         type: "list",
-        name: "team",
-        choices: ["engineer", "intern", "I am done adding employees"],
-        message: "Which type of employee would you like to register?",
+        name: "role",
+        choices: ["Manager", "Engineer", "Intern"],
+        message: "Select a role for the employee: ",
+        validate: (position) => {
+          if (position) {
+            return true;
+          } else {
+            return "Must select a role.";
+          }
+        },
       },
     ])
     .then((data) => {
-      if (data.choices === "engineer") {
-        addEngineer();
-      } else if (data.choices === "intern") {
-        addIntern();
+      if (data.role === "Manager") {
+        inquirer
+          .prompt([
+            {
+              type: "input",
+              name: "officeNumber",
+              message: "What is the managers office number?",
+              validation: (officeNum) => {
+                if (officeNum) {
+                  return true;
+                } else {
+                  return "Must enter an office number.";
+                }
+              },
+            },
+          ])
+          .then(response => {
+            console.log(response.officeNumber);
+            const teamManager = new Manager (
+              data.name,
+              data.id,
+              data.email,
+              data.role,
+              response.officeNumber
+            );
+            newTeam.push(teamManager);
+            selectEmp();
+          })
+      } else if (data.role === "Engineer") {
+        inquirer.prompt([
+            {
+              type: "input",
+              name: "github",
+              message: "What is the Github username of the engineer?",
+              validate: (username) => {
+                if (username) {
+                  return true;
+                } else {
+                  return "Must enter username.";
+                }
+              }
+            }
+          ])
+
+          //Initiating a new Manager object
+          .then(response =>{
+            const newEngineer = new Engineer(
+              data.name,
+              data.id,
+              data.email,
+              data.role,
+              response.github
+            );
+            newTeam.push(newEngineer);
+            selectEmp();
+          });
+      } else if (data.role === "Intern") {
+        inquirer.prompt([
+            {
+              type: "input",
+              name: "school",
+              message: "Where did the intern attend school?",
+              validate: (schooldata) => {
+                if (schooldata) {
+                  return true;
+                } else "Must enter a school.";
+              }
+            }
+          ])
+          .then(response =>{
+            console.log(response.school);
+            const newIntern = new Intern(
+              data.name,
+              data.id,
+              data.email,
+              data.role,
+              response.school
+            );
+            newTeam.push(newIntern);
+            selectEmp();
+          });
       } else {
-        console.log("Check convert file for your organized team.");
-        const convertFile = convert.convertToHTML(employeeCards);
-        fs.writeFile("./new_index.html", convertFile, (err) => {
-          if (err) throw err;
-          //
-        });
+        const newEmployee = new Employee(
+          data.name,
+          data.email,
+          data.id,
+          data.role
+        );
+        newTeam.push(newEmpoyee);
+        selectEmp();
       }
+
+      const selectEmp = () => {
+        inquirer.prompt([
+            {
+              type: "confirm",
+              name: "team",
+              message: "Will the team have anymore employees?",
+            },
+          ])
+          .then((res) => {
+            if (res.team === true) {
+              promptTeamMember(newTeam);
+            } else {
+              console.log("Added team", newTeam);
+              let generateCard = generateHTML(newTeam)
+              convertToHTML(generateCard);
+            }
+          });
+      };
     });
-};
-
-//prompt to build an intern
-const addIntern = () => {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "internsName",
-        message: "What is the name of intern?",
-      },
-      {
-        type: "input",
-        name: "internsId",
-        message: "What is the ID of the intern?",
-      },
-      {
-        type: "input",
-        name: "internsEmail",
-        message: "What is the e-mail address of the intern?",
-      },
-      {
-        type: "input",
-        name: "school",
-        message: "Where did the intern attend school?",
-      },
-    ])
-    .then((data) => {
-      let interns = new Intern(
-        data.internsName,
-        data.internsId,
-        data.internsEmail,
-        data.school
-      );
-      console.log(intern);
-
-      internCard = cardGenerator.internCard(
-        interns.name,
-        interns.id,
-        interns.email,
-        interns.school
-      );
-      employeeCards += internCard;
-      selectEmp();
-    });
-};
-
-// Prompt to Build Engineer
-const addEngineer = () => {
-  inquirer
-    .prompt([
-      {
-        type: "input",
-        name: "engineersName",
-        message: "What is the name of the engineer?",
-      },
-      {
-        type: "input",
-        name: "engineersID",
-        message: "What is the id of the engineer?",
-      },
-      {
-        type: "input",
-        name: "engineersEmail",
-        message: "What is the e-mail address of the engineer?",
-      },
-      {
-        type: "input",
-        name: "github",
-        message: "What is the Github username of the engineer?",
-      },
-    ])
-    .then((data) => {
-      let engineers = new Engineer(
-        data.engineersName,
-        data.engineersID,
-        data.engineersEmail,
-        data.github
-      );
-
-      engineerCard = cardGenerator.engineerCard(
-        engineers.name,
-        engineers.id,
-        engineers.email,
-        engineers.github
-      );
-      employeeCards += engineerCard;
-
-      selectEmp();
-    });
-};
-
-(module.exports = promptTeamManager), addEngineer, addIntern;
+}
+promptTeamMember();
