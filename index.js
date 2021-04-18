@@ -1,4 +1,4 @@
-// Dependencies 
+// Dependencies
 const inquirer = require("inquirer");
 const fs = require("fs");
 const jest = require("jest");
@@ -8,13 +8,14 @@ const Employee = require("./lib/employee");
 const Manager = require("./lib/manager");
 const Engineer = require("./lib/engineer");
 const Intern = require("./lib/intern");
-const generateHTML = require("./src/card-generator")
+const generateHTML = require("./src/card-generator");
 
 // For user inputs
 const newTeam = [];
 // Prompt user for inputs
 function promptTeamMember() {
-  inquirer.prompt([
+  inquirer
+    .prompt([
       {
         type: "input",
         name: "name",
@@ -25,7 +26,7 @@ function promptTeamMember() {
           } else {
             return "Must enter a name.";
           }
-        }
+        },
       },
       {
         type: "input",
@@ -82,9 +83,9 @@ function promptTeamMember() {
               },
             },
           ])
-          .then(response => {
+          .then((response) => {
             console.log(response.officeNumber);
-            const teamManager = new Manager (
+            const teamManager = new Manager(
               data.name,
               data.id,
               data.email,
@@ -93,9 +94,10 @@ function promptTeamMember() {
             );
             newTeam.push(teamManager);
             selectEmp();
-          })
+          });
       } else if (data.role === "Engineer") {
-        inquirer.prompt([
+        inquirer
+          .prompt([
             {
               type: "input",
               name: "github",
@@ -106,12 +108,12 @@ function promptTeamMember() {
                 } else {
                   return "Must enter username.";
                 }
-              }
-            }
+              },
+            },
           ])
 
           //Initiating a new Manager object
-          .then(response =>{
+          .then((response) => {
             const newEngineer = new Engineer(
               data.name,
               data.id,
@@ -123,7 +125,8 @@ function promptTeamMember() {
             selectEmp();
           });
       } else if (data.role === "Intern") {
-        inquirer.prompt([
+        inquirer
+          .prompt([
             {
               type: "input",
               name: "school",
@@ -132,10 +135,10 @@ function promptTeamMember() {
                 if (schooldata) {
                   return true;
                 } else "Must enter a school.";
-              }
-            }
+              },
+            },
           ])
-          .then(response =>{
+          .then((response) => {
             console.log(response.school);
             const newIntern = new Intern(
               data.name,
@@ -159,7 +162,8 @@ function promptTeamMember() {
       }
 
       const selectEmp = () => {
-        inquirer.prompt([
+        inquirer
+          .prompt([
             {
               type: "confirm",
               name: "team",
@@ -171,7 +175,7 @@ function promptTeamMember() {
               promptTeamMember(newTeam);
             } else {
               console.log("Added team", newTeam);
-              let generateCard = generateHTML(newTeam)
+              let generateCard = generateHTML(newTeam);
               convertToHTML(generateCard);
             }
           });

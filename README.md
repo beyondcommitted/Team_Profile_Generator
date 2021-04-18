@@ -10,9 +10,9 @@ in and efficient and effective manor.
 ---
 ## Links to Application and GitHub
 Below are the needed links to the view this application and its functionality:<br>
-https://github.com/beyondcommitted/Team_Profile_Generator<br>
-https://beyondcommitted.github.io/Team_Profile_Generator/index.html<br>
-https://youtu.be/eK73XUy3lxo
+## [GitHub](https://github.com/beyondcommitted/Team_Profile_Generator)<br>
+## [Deployment](https://beyondcommitted.github.io/Team_Profile_Generator/index.html)<br>
+## [Walk-through Video](https://youtu.be/eK73XUy3lxo)
 ---
 ## User Story
 ```
